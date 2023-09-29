@@ -1,0 +1,75 @@
+
+# First things first: Theory
+
+## Thread
+- Thread are components of a process
+- There can be multiple threads in a process, they share the same memory
+
+## GIL
+- C Python have a thing call GIL, or Global Interpreter Lock
+- GIL is a mutex that protects access to Python object, preventing threads from executing Python bytecodes at once
+- GIL ensures that only 1 thread runs in the interpreter at once by gets exclusive access to the interpreter
+
+## GIL behavior
+- simple: a thread hold GIL when running
+- however, it release GIL when blocking for I/O
+- So, at that time, other "ready" threads get their chance to run
+- it's basically a kind of "cooperative" multitasking
+- In order to emulate concurrency of execution, the interpreter regularly tries to switch threads (see sys.setswitchinterval()).
+
+## Python threads
+- Python threads are real system threads: POSIX threads on Linux and Windows thread on Window
+- fully managed by the host OS
+
+## Thread scheduling
+- C Python does NOT have a thread scheduler
+- All thread scheduling is left to the host OS
+
+## Solution for this limitation
+- Using multi-processing: each Python process gets its own Python interpreter so GIL won't be a problem -> this could become scaling bottleneck
+- Using alternative Python interpreters without GIL (Jython, IronPython, PyPy): but comes with other limitations and not supported widely
+
+
+# Practice by Code
+
+```
+# single threaded
+
+COUNT = 50000000
+
+def countdown(n):
+    while n>0:
+        n -= 1
+
+start = time.time()
+countdown(COUNT)
+end = time.time()
+
+```
+
+```
+# vs multi thread
+t1 = Thread(target=countdown, args=(COUNT//2,))
+t2 = Thread(target=countdown, args=(COUNT//2,))
+
+start = time.time()
+t1.start()
+t2.start()
+t1.join()
+t2.join()
+end = time.time()
+```
+
+```
+# single thread: 1.11s
+# multi thread: 1.14s
+-> almost same time to finish
+```
+
+# Reference
+
+- https://docs.python.org/3/glossary.html#term-global-interpreter-lock
+- https://superfastpython.com/gil-removed-from-python/
+- https://realpython.com/intro-to-python-threading/
+- https://www.dabeaz.com/python/UnderstandingGIL.pdf
+- http://www.dabeaz.com/python/GIL.pdf
