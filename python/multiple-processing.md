@@ -26,13 +26,22 @@
 
 ## Synchronization
 
-- Using `multiprocess.Lock`
+| Technique | usage |
+| --------- | ------- |
+| Lock      | called mutex. can be acquired by only 1 process at a time. other process will be blocked when trying to acquire
+| RLock     | extend of mutex, can be acquired more than once by the same process | 
+| Event     | primitive condition that wait on every process for the nofication by calling `set()`
+| Condition | extend of mutex combine with Event, with wait for the notification from other process. while waiting, it release the lock for other process to acquire. But can set notify(number) or notify_all(), while Event `set()` same as `notify_all()` 
+| Semaphore | extend of mutex, allow limit number of process to acquire a lock of critical section
+| BoundedSemaphore | same as Semaphore, but cannot call `release()` more than limit, safer but we usually use `with semaphore` so IMO it isn't a big problem
+| Barrier | primitive synchronization. Opposite to semaphore, `Barrier(N)`` makes all process run first and when number of process reach the number `N`, barrier will be released for them and wait for other N processes to reach barrier
 
 ## Share state between processes
 
-- Shared Memory: 
-  - `from multiprocessing import Value, Array, sharedctypes`
-  - process and thread-safe
+- Shared Memory Data types: 
+  - `from multiprocessing import sharedctypes`
+  - `Value, Array` are process and thread-safe
+  - `RawValue | RawArray` don't use mutex -> aren't process-safe
 - Server process:
   - `from multiprocessing import Manager`
   - `Manager()` instance support many types that can be shared -> more flexible
