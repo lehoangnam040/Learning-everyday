@@ -1,10 +1,6 @@
 
 # First things first: Theory
 
-## Thread
-- Thread are components of a process
-- There can be multiple threads in a process, they share the same memory
-
 ## GIL
 - C Python have a thing call GIL, or Global Interpreter Lock
 - GIL is a mutex that protects access to Python object, preventing threads from executing Python bytecodes at once
@@ -17,18 +13,14 @@
 - it's basically a kind of "cooperative" multitasking
 - In order to emulate concurrency of execution, the interpreter regularly tries to switch threads (see sys.setswitchinterval()).
 
-## Python threads
-- Python threads are real system threads: POSIX threads on Linux and Windows thread on Window
-- fully managed by the host OS
-
-## Thread scheduling
-- C Python does NOT have a thread scheduler
-- All thread scheduling is left to the host OS
-
 ## Solution for this limitation
 - Using multi-processing: each Python process gets its own Python interpreter so GIL won't be a problem -> this could become scaling bottleneck
 - Using alternative Python interpreters without GIL (Jython, IronPython, PyPy): but comes with other limitations and not supported widely
 
+## When using multithread to overcome limitations
+
+- for blocking I/O task, to release GIL: r/w files, download / upload, querying DB, ...
+- call external C code, to release GIL
 
 # Practice by Code
 
