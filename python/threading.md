@@ -4,6 +4,7 @@
 
 - `threading` interfaces on top of low level `_thread` module
 - represent native thread provided by the underlying OS: POSIX threads on Linux and Windows thread on Window
+- Python thread = OS thread + Python thread state
 - fully managed by the host OS
 - Thread are components of a process
 - There can be multiple threads in a process, they share the same memory
