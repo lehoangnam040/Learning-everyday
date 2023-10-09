@@ -1,6 +1,10 @@
 # First things first: Theory
 
 - it's the core of every asyncio application
+- when create an event loop, we creates empty queue of tasks
+- each iteration of loop checks for tasks that need to be run and will run them until a task hits an I/O operation
+- this task will be paused, instruct OS to wait socket of it to complete
+- then execute another task on queue
 - default with 2 different loop implementations: `SelectorEventLoop` (Unix) & `ProactorEventLoop` (Windows)
 
 # Code
