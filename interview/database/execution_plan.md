@@ -1,0 +1,8 @@
+- How SQL executed in DB?
+  - 1. Client submit statement to DB
+  - 2. A query tree is generated
+  - 3. Optimizer generates execution plans and then choose one plan
+  - 4. Executor retrieves data from storage engine based on the plan
+  - 5. If statement is read-only -> buffer manager
+  - 6. if statement is a write -> transaction manager
+  - 7. During a transaction, lock manager ensure ACID properties
