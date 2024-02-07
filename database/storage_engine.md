@@ -34,10 +34,28 @@
   - good fit for analytical, compute aggregate
 
 ## Data files and index files
+- how the data is stored
 - usually separates data files and index files
 - data files: store data records
 - index files: store metadata and use it to locate records in data files
 - files are partitioned into pages, pages can be organized as sequences of records
+
+- data files
+  - index-organized tables (IOT): store in the index itself, with key in order, to improve range scans. Data entries hold data records.
+  - heap-organized tables (heap files): place in write order, no additional work is required with pages are added, but require index structures.
+  - hash-organized tables (hash files): store in buckets with hash value to improve lookup speed
+- index files
+  - map keys to locations in data files
+  - index on PK is primary index, others are secondary indexes
+
+# Common concepts of storage structures
+- Buffering
+  - whether or not it "chooses" to buffer data in memory before putting it on disk
+- Mutability
+  - whether or not it reads / updates / writes data at the same location in the file (mutable)
+  - immutable structure means append-only
+- Ordering
+  - whether or not data records are stored in the key order in the pages on disk
 
 # Reference
 
