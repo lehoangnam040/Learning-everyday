@@ -40,10 +40,42 @@
 - deleting records can be done by nullifying / remove pointers 
 
 
-# Cell Layout
+## Cell Layout
+- cells is combined into pages
+- cell has 2 type:
+  - key cell: 
+    - pointer to the page
+    - layout: [int] key_size | [int] page_id | [bytes] key
+  - key-value cell: 
+    - hold keys and data records
+    - layout: [byte] flags | [int] key_size | [int] value_size | [bytes] key | [bytes] data_record
 
+## Combining cells into slotted pages
+- the layout of page
+```
+[header] [offset][offset][offset]...[free space] [cell][cell][cell]...
+```
 
-- records consist of primative types and their combinations -> need to serialize in order to send / write the record, and deserialize it when receive / read
+- append cells to right side, keep offsets (pointers) to the left side
+- cells are laid out in insertion order, but offset are sorted to allow using binary search
+
+## Managing variable-size data
+- remove item from the page: 
+  - remove pointer
+  - mark cell as available in a in-memory `availability list` 
+- insert new cell:
+  - first check this `availability list`
+  - can fit the cell using `first fit` or `best fit`
+  - if cannot find enough consecutive bytes to fit new cell -> live cells are rewritten to defragment
+
+# Versioning
+- DB can be improved -> the file format can change -> need to find out which version
+- Apache Cassandra is using version prefixes in filenames
+- PostgreSQL stores version in `PG_VERSION` file
+- version can be stored in the index file header
+
+# Checksum
+- file on disk may get damaged or corrupted -> need a way to identify problems -> using checksum and CRCs
 
 
 # References
