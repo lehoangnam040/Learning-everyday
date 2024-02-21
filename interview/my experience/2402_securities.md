@@ -1,7 +1,7 @@
 ##  validate file type when do upload via presigned URL?
 ...
 
-## design DB SQL or NoSQL to store list of directories / files with metadata
+## design DB SQL or NoSQL to store list of directories / files with metadata + search with name on both directory / files
 ...
 
 ## advantages of using asyncio vs multiple threading?
