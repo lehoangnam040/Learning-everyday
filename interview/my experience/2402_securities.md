@@ -10,6 +10,9 @@
 ## design a scale up/down approach for a topic when scale up on business time and scale down on night time?
 ...
 
+## store session in 2 redis instance -> want to clear session on instance A -> trigger on instance B
+...
+
 ## does Django Python apply Clean architect?
 
 - Not really, since Django just supports only data access layer
