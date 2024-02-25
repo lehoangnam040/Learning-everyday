@@ -10,7 +10,7 @@
 - simple: a thread hold GIL when running
 - however, it release GIL when blocking for I/O
 - So, at that time, other "ready" threads get their chance to run
-- it's basically a kind of "cooperative" multitasking
+- it's basically a kind of "preemptive" multitasking
 - In order to emulate concurrency of execution, the interpreter regularly tries to switch threads (see sys.setswitchinterval()).
 
 ## Scenario to describe GIL (on Unix)

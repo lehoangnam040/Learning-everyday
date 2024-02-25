@@ -1,0 +1,6 @@
+###  GraphQL vs Restful API?
+...
+
+
+### When to use read replica, partition on DB to scale
+...
