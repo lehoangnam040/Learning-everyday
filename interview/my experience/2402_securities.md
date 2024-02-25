@@ -10,6 +10,8 @@
 - cooperative multi-task, much light-weight than OS threads
 - support cancellation
 - prevent context switching in OS level
+- using Green Threads Style
+- https://hackernoon.com/asynchronous-python-45df84b82434
 
 ### design a scale up/down approach for a topic when scale up on business time and scale down on night time?
 ...
