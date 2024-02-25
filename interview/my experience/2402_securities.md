@@ -2,7 +2,8 @@
 ...
 
 ## design DB SQL or NoSQL to store list of directories / files with metadata + search with name on both directory / files
-...
+- System Design [here](../prev%20projects/1_robot_data_sync_system.md)
+- For search with name on both directory / files: Need to build search text index to search on both
 
 ## advantages of using asyncio vs multiple threading?
 ...
