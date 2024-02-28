@@ -19,8 +19,9 @@ class DownloaderMetadata:
 
     def __init__(self, loop: asyncio.AbstractEventLoop, coroutine, *args, **kwargs) -> None:
         self.progress = 0
-        self.task = asyncio.Task(coroutine, loop=loop)
+        # need to ensure future after create condition
         self.notifier = threading.Condition()
+        self.task: "asyncio.Task" = asyncio.ensure_future(coro_or_future=coroutine, loop=loop)
 
 class Handler:
 
@@ -28,20 +29,22 @@ class Handler:
         self.loop = loop
         self.fetchers: Dict[int, DownloaderMetadata] = dict()
 
-    async def download_logic(self, url: str, key: int) -> int:
+    def notify_all(self, key: int):
+        with self.fetchers[key].notifier:
+            self.fetchers[key].notifier.notify_all()
+
+    async def download_logic(self, url: str, key: int) -> None:
         async with ClientSession() as session:
             async with session.get(url) as response:
                 with open(f"{key}.json", "wb") as _f:
                     async for chunk in response.content.iter_chunked(512):
                         self.fetchers[key].progress += len(chunk)
                         _f.write(chunk)
-                        with handler.fetchers[key].notifier:
-                            self.fetchers[key].notifier.notify_all()
-        with handler.fetchers[key].notifier:
-            self.fetchers[key].notifier.notify_all()
+                        await self.loop.run_in_executor(None, self.notify_all, key)
+        self.loop.run_in_executor(None, self.notify_all, key)
 
     def start_download_model(self, key: int):
-        self.fetchers[key] = DownloaderMetadata(loop, self.download_logic('https://raw.githubusercontent.com/json-iterator/test-data/master/large-file.json', key))
+        self.fetchers[key] = DownloaderMetadata(self.loop, self.download_logic('https://raw.githubusercontent.com/json-iterator/test-data/master/large-file.json', key))
 
     def read_progress(self, key: int) -> int:
         return self.fetchers[key].progress
