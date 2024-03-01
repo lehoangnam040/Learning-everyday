@@ -1,6 +1,7 @@
 import asyncio
 import uvloop   # 0.14.0
 import threading
+import signal
 from aiohttp import ClientSession
 
 from typing import Dict
@@ -21,7 +22,8 @@ class DownloaderMetadata:
         self.progress = 0
         # need to ensure future after create condition
         self.notifier = threading.Condition()
-        self.task: "asyncio.Task" = asyncio.ensure_future(coro_or_future=coroutine, loop=loop)
+        # self.task: "asyncio.Task" = asyncio.ensure_future(coro_or_future=coroutine, loop=loop)
+        self.task = asyncio.run_coroutine_threadsafe(coro=coroutine, loop=loop)
 
 class Handler:
 
@@ -49,16 +51,11 @@ class Handler:
     def read_progress(self, key: int) -> int:
         return self.fetchers[key].progress
 
-    async def cancel_download_model(self, key: int):
-        task = self.fetchers[key].task
-        print("is done before cancel", task.done())
-        if task.done():
-            return
-        task.cancel()
-        try:
-            await task
-        except asyncio.CancelledError:
-            print("cancelled now")
+    def cancel_download_model(self, key: int):
+        print(self.fetchers[key].task.running())
+        print(self.fetchers[key].task.cancel())
+        self.notify_all(key)
+        print(self.fetchers[key].task.running())
 
 def grpc_subscribe_func(thread_identify: str, handler: Handler, key: int):
     while True:
@@ -70,9 +67,6 @@ def grpc_subscribe_func(thread_identify: str, handler: Handler, key: int):
         progress = handler.read_progress(key)
         print("read_progress", thread_identify, progress, handler.fetchers[key].task.done())
 
-def grpc_cancel_func(handler: Handler, key: int):
-    asyncio.run_coroutine_threadsafe(handler.cancel_download_model(key), handler.loop)
-
 if __name__ == "__main__":
     # PYTHON 3.6
     uvloop.install()
@@ -82,8 +76,15 @@ if __name__ == "__main__":
     asyncio_thread.start()
 
     handler = Handler(loop)
+    key = 31
 
-    key = 30
+    def graceful_shutdown(*args, **kwargs):
+        print("graceful_shutdown")
+        handler.cancel_download_model(key)
+        # loop.stop()   # comment this to test
+    for _sig in [signal.SIGINT, signal.SIGTERM]:
+        signal.signal(_sig, graceful_shutdown)
+
     handler.start_download_model(key)
 
     t1 = threading.Thread(target=grpc_subscribe_func, args=("t1", handler, key))
