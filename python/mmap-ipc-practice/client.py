@@ -3,17 +3,17 @@ Continuously read images from a memory-mapped file and show them on a window.
 """
 import mmap
 import time
-
-import cv2 as cv
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 
 shape = (720, 1280, 3)
-n = np.prod(shape)
-mm = mmap.mmap(-1, n)
-# cv.namedWindow("output", cv.WINDOW_NORMAL)        # Create window with freedom of dimensions
-# cv.resizeWindow("output", 512, 512) 
+n = int(np.prod(shape))
 
+img = np.zeros(shape)
+im = plt.imshow(img)
+fd = os.open('/tmp/mmaptest', os.O_RDONLY)
+mm = mmap.mmap(fd, n, mmap.MAP_SHARED, mmap.PROT_READ)  # it has to be only for reading
 
 while True:
     # read image
@@ -21,21 +21,15 @@ while True:
         start = time.perf_counter()
         mm.seek(0)
         buf = mm.read(n)
-        img = np.frombuffer(buf, dtype=np.uint8).reshape(shape)
         stop = time.perf_counter()
-
+        img = np.frombuffer(buf, dtype=np.uint8).reshape(shape)
         print("Reading Duration:", (stop - start) * 1000, "ms")
-        # im.set_data(img)
-        # plt.pause(0.05)
-        # plt.show()
-        # cv.imwrite(f"{stop}.png" , img)
-    except:
+        im.set_data(img)
+        plt.pause(0.01)
+    except Exception as e:
+        print(e)
         break
-    cv.imshow("output", img)
-    key = cv.waitKey(1) & 0xFF
-    key = chr(key)
-    if key.lower() == "q":
-        break
-
-# cv.destroyAllWindows()
+plt.show()
 mm.close()
+
+# read max: 0.7ms

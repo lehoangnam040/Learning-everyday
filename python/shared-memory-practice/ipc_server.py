@@ -1,22 +1,26 @@
 from multiprocessing.shared_memory import SharedMemory
-from multiprocessing import resource_tracker
 import time
-import sys
+import numpy as np
 
-import cv2 as cv
+# import cv2 as cv
+
+# shape = (720, 1280, 3)
+shape = (3000, 4000, 3)
+N = int(np.prod(shape))
 
 print("Opening camera...")
-cap = cv.VideoCapture(0)
-cap.set(cv.CAP_PROP_FRAME_WIDTH, 1280)
-cap.set(cv.CAP_PROP_FRAME_HEIGHT, 720)
+# cap = cv.VideoCapture(0)
+# cap.set(cv.CAP_PROP_FRAME_WIDTH, shape[1])
+# cap.set(cv.CAP_PROP_FRAME_HEIGHT, shape[0])
 
-
-sm = SharedMemory(name="namlh", create=True, size=2764800)
+sm = SharedMemory(name="namlh", create=True, size=N)
 try:
     while True:
-        ret, img = cap.read()
-        if not ret:
-            break
+        # img = np.random.rand()
+        # ret, img = cap.read()
+        # if not ret:
+        #     break
+        img = np.random.rand(*shape).astype(np.uint8)
 
         # write image
         start = time.perf_counter()
@@ -27,6 +31,6 @@ try:
 except KeyboardInterrupt:
     pass
 print("Closing resources")
-cap.release()
+# cap.release()
 sm.close()
 sm.unlink()
