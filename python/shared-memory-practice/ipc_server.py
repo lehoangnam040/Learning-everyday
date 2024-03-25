@@ -14,17 +14,19 @@ print("Opening camera...")
 # cap.set(cv.CAP_PROP_FRAME_HEIGHT, shape[0])
 
 sm = SharedMemory(name="namlh", create=True, size=N)
+img = np.ndarray(shape, dtype=np.uint8, buffer=sm.buf)
+img.fill(0)
 try:
     while True:
         # img = np.random.rand()
         # ret, img = cap.read()
         # if not ret:
         #     break
-        img = np.random.rand(*shape).astype(np.uint8)
+        _val = np.random.rand(*shape).astype(np.uint8)
 
         # write image
         start = time.perf_counter()
-        sm.buf[:] = img.tobytes()
+        img[:,:,:] = _val
         stop = time.perf_counter()
 
         print("Writing Duration:", (stop - start) * 1000, "ms")
