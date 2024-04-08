@@ -2,15 +2,13 @@ from multiprocessing.shared_memory import SharedMemory
 from multiprocessing import resource_tracker
 import time
 import numpy as np
-import matplotlib.pyplot as plt
+import cv2
 
 sm = SharedMemory(name="namlh")
 resource_tracker.unregister(f"/{sm.name}", "shared_memory")
-# shape = (720, 1280, 3)
-shape = (3000, 4000, 3)
+shape = (720, 1280, 3)
+# shape = (3000, 4000, 3)
 
-# img = np.zeros(shape)
-# im = plt.imshow(img)
 
 while True:
     # read image
@@ -20,10 +18,11 @@ while True:
         stop = time.perf_counter()
 
         print("Reading Duration:", (stop - start) * 1000, "ms", img.shape)
-        # im.set_data(img)
-        plt.pause(0.01)
+        cv2.imshow("video", img)
+        if cv2.waitKey(10) & 0xFF == ord('q'): 
+            break
     except:
         break
-    
+
 sm.close()
-plt.show()
+cv2.destroyAllWindows()
