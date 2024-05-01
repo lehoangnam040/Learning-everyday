@@ -1,0 +1,20 @@
+- Kafka is A Distributed Event Streaming Platform
+  - Distributed: hosted on multiple nodes
+  - Event:
+    - immutable things
+    - business fact has value to more than one objective
+    - asynchronous communication
+  - Streaming:
+    - a continuous flow of data in real-time
+    - streaming != stream processing: stream processing is the task that process data on streaming
+  - Platform: kafka provide additional functions
+    - data ingestion
+    - stream processing
+    - ecosystem, tools, ...
+    - APIs: producer, consumer, stream, connect, AdminClient
+- Kafka usecase:
+  - message broker: pub/sub
+  - stream processing
+  - log aggregation
+  - log shipping
+  - Event-driven architecture (EDA)
