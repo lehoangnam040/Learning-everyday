@@ -40,3 +40,8 @@
 ## producer
 - which create messages and write to topics
 - need Kafka SDK to implement a producer
+- partition: can be explicit specified in this producer
+- if no partition specified and `key != null` -> partition = murmur2(bytes(key)) % `num_partition` 
+  -> same key always go to same partition
+  -> but when `num_partition` changed, later key can go different partition
+- if `key == null` -> round-robin OR `Sticky Paritioner`
