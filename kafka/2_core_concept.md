@@ -45,3 +45,21 @@
   -> same key always go to same partition
   -> but when `num_partition` changed, later key can go different partition
 - if `key == null` -> round-robin OR `Sticky Paritioner`
+
+## consumer
+- which read messages from topics
+- using pull/poll
+- it does NOT remove messages from topics
+- need Kafka SDK to implement a consumer
+- `consumer-group`
+  - is a load-balance mechanism -> distributing partitions approximately evenly to consumers within
+  - every consumer need to be in a `consumer-group`
+  - when new consumer join group -> rebalance is triggered
+  - rule:
+    - 1 partition is assigned to at MOST 1 consumer
+    - 1 consumer can consumer MORE than 1 partition
+    - X consumers > Y partitions -> (X-Y) consumers in idle mode -> for backup purposes
+
+# replication
+- A replica is a copy of a partition
+- Replicas are distributed across brokers
